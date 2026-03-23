@@ -32,6 +32,7 @@
 \documentclass[8pt,a4paper]{report}%{book}
 
 \usepackage{listings}
+\usepackage{csquotes}
 
 \usepackage{float}
 % TEXT FORMATTING
@@ -301,18 +302,46 @@ I extracted the number of common tokens programmatically and it was found to be 
 
 \subsection*{4}
 
+Following are the optimal calculated values. I used Mean Square Error - MSE to measure the distance between the actual and calculated values for the token appearance frequency.
+
+\begin{table}[H]
+\begin{tabular}{|c|l|l|l|}
+\hline
+\multicolumn{1}{|r|}{\textbf{}} & \multicolumn{1}{r|}{\textbf{NLTK}} & \multicolumn{1}{r|}{\textbf{spaCy}} & \multicolumn{1}{r|}{\textbf{BERT}} \\ \hline
+\textbf{A}                      & 0.1                                & 0.4                                 & 0.1                                \\ \hline
+\end{tabular}
+\end{table}
+
 \subsection*{5}
 
-\subsection*{References}
-\begin{itemize}
-    \item{NLTK \lstinline{word_tokenize} src: \url{https://github.com/nltk/nltk/blob/develop/nltk/tokenize/__init__.py#L127}}
-    \item{SpaCy tokenizer docs: \url{https://spacy.io/usage/linguistic-features#how-tokenizer-works}}
-    \item{FreqDist from NLTK: \url{https://www.nltk.org/api/nltk.probability.FreqDist.html}}
-    \item{Pandas DF different dict size: \url{https://www.statology.org/pandas-dataframe-from-dict-with-different-length/}}
-    \item{Pandas DF alight text center: \url{https://stackoverflow.com/questions/17232013/how-to-set-the-pandas-dataframe-data-left-right-alignment}}
-    \item{Pandas fix column type: \url{https://pandas.pydata.org/docs/user_guide/integer_na.html}}
-    \item{Set intersection \url{https://www.w3schools.com/python/ref_set_intersection.asp}}
+
+Following is the prompt I used for ChatGPT:
+
+
+\begin{quote}
+I have the tokens from 3 libraries: NLTK, spaCy and BERT.
+
+Generate Python code for the following assignment:
+Σύμφωνα με τον Νόμο του Zipf, το γινόμενο της πιθανότητας ενός type επί την θέση του στη λίστα των types (ταξινομημένη κατά φθίνουσα σειρά συχνότητας) είναι ίσο με μια σταθερά Α. Βρείτε ποια τιμή της σταθεράς A (εξετάστε τις επιλογές: 0.1, 0.2, 0.3, …, 1.0) ταιριάζει καλύτερα με το συγκεκριμένο σύνολο κείμενων. Δημιουργήστε ένα διάγραμμα όπου ο άξονας x είναι η θέση ενός type σε φθίνουσα σειρά συχνότητας και ο άξονας y είναι η συχνότητα του type στην συλλογή. Και οι 2 άξονες να ακολουθούν την λογαριθμική κλίμακα. Δείξτε στο ίδιο διάγραμμα με διαφορετικά χρώματα (i) τις προβλέψεις του νόμου του Zipf (με την καλύτερη τιμή που βρέθηκε για τη σταθερά Α) και (ii) τις πραγματικές μετρήσεις που έγιναν στα κείμενα.
+
+Make sure you generate 2 separate functions: one to find the best A value and another to plot the diagrams. Make sure each function accepts and returns the necessary variables.
+
+\end{quote}
+
+The generated code is in my report notebook. No changes were necessary to be made.
+
+
+
+% \subsection*{References}
+% \begin{itemize}
+%     \item{NLTK \lstinline{word_tokenize} src: \url{https://github.com/nltk/nltk/blob/develop/nltk/tokenize/__init__.py#L127}}
+%     \item{SpaCy tokenizer docs: \url{https://spacy.io/usage/linguistic-features#how-tokenizer-works}}
+%     \item{FreqDist from NLTK: \url{https://www.nltk.org/api/nltk.probability.FreqDist.html}}
+%     \item{Pandas DF different dict size: \url{https://www.statology.org/pandas-dataframe-from-dict-with-different-length/}}
+%     \item{Pandas DF alight text center: \url{https://stackoverflow.com/questions/17232013/how-to-set-the-pandas-dataframe-data-left-right-alignment}}
+%     \item{Pandas fix column type: \url{https://pandas.pydata.org/docs/user_guide/integer_na.html}}
+%     \item{Set intersection \url{https://www.w3schools.com/python/ref_set_intersection.asp}}
     
-\end{itemize}
+% \end{itemize}
 
 \end{document}
