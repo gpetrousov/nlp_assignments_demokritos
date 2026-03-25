@@ -337,6 +337,32 @@ Make sure you generate 2 separate functions: one to find the best A value and an
 
 The generated code is in my report notebook. No changes were necessary to be made.
 
+\section*{B. N-gram Language Models}
+
+\subsection*{1}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+\multicolumn{1}{|r|}{\textbf{Language model}} & \multicolumn{1}{l|}{\textbf{Original Text}} & \multicolumn{1}{r|}{\textbf{Lowercase}} & \multicolumn{1}{r|}{\textbf{Abstract digits}} \\ \hline
+Bigrams (k = 1)                               & 383.738                                     & 591.358                                 & 555.858                                       \\ \hline
+Bigrams (k = 0.01)                            & 137.839                                     & 349.178                                 & 274.965                                       \\ \hline
+Trigrams (k = 1)                              & 1352.323                                    & 1963.496                                & 1740.481                                      \\ \hline
+Trigrams (k = 0.01                            & 429.445                                     & 1024.961                                & 796.219                                       \\ \hline
+\end{tabular}
+\end{table}
+
+In each row, $k=0.01$ results in a significantly better (lower) perplexity. $k=1$ proves to be a much more aggressive smoothing method which overshadows the rest of the probabilities.
+
+The lowercase column appears to perform worse than the original one. I imagine this is happening because ``<UNK`` gets a higher frequency in the later making it much easier to appear in the vocabulary than in the former. This is happening because more words cross the cutover threshold (3) because they're lowercased. In this case, the vocabulary is larger and also more complex which forces the model to have to guess the next word instead of assigning ``<UNK>``, thus increasing perplexity.
+
+We can see that bigrams perform better than trigrams in every case. This is expected because our dataset is too small to create a large enough vocabulary of every possible trigram combination that we encounter in the test dataset.
+
+The Abstract Digits column performs better (lower perplexity) than the Lowercase column due to digit abstraction and vocabulary shrinkage. All digits collapse into combination of ``\#`` which the model does not have to learn. This makes it easier for the model to predict digits in a sentence.
+
+\subsection*{2}
+
 
 
 % \subsection*{References}
@@ -348,7 +374,9 @@ The generated code is in my report notebook. No changes were necessary to be mad
 %     \item{Pandas DF alight text center: \url{https://stackoverflow.com/questions/17232013/how-to-set-the-pandas-dataframe-data-left-right-alignment}}
 %     \item{Pandas fix column type: \url{https://pandas.pydata.org/docs/user_guide/integer_na.html}}
 %     \item{Set intersection \url{https://www.w3schools.com/python/ref_set_intersection.asp}}
-    
+    % \item{List flatten \url{https://stackoverflow.com/questions/952914/how-do-i-make-a-flat-list-out-of-a-list-of-lists}}
+        % \item{n-gram perplexity \url{https://medium.com/data-science/implementing-a-character-level-trigram-language-model-from-scratch-in-python-27ca0e1c3c3f}}
+        
 % \end{itemize}
 
 \end{document}
