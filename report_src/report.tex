@@ -305,12 +305,19 @@ I extracted the number of common tokens programmatically and it was found to be 
 Following are the optimal calculated values. I used Mean Square Error - MSE to measure the distance between the actual and calculated values for the token appearance frequency.
 
 \begin{table}[H]
+\centering
 \begin{tabular}{|c|l|l|l|}
 \hline
 \multicolumn{1}{|r|}{\textbf{}} & \multicolumn{1}{r|}{\textbf{NLTK}} & \multicolumn{1}{r|}{\textbf{spaCy}} & \multicolumn{1}{r|}{\textbf{BERT}} \\ \hline
 \textbf{A}                      & 0.1                                & 0.4                                 & 0.1                                \\ \hline
 \end{tabular}
 \end{table}
+
+\begin{center}
+    \includegraphics[scale=0.7]{images/nltk_zipf_law_comparison.png}
+    \includegraphics[scale=0.7]{images/spacy_zipf_law_comparison.png}
+    \includegraphics[scale=0.7]{images/bert_zipf_law_comparison.png}
+\end{center}
 
 \subsection*{5}
 
@@ -319,12 +326,12 @@ Following is the prompt I used for ChatGPT:
 
 
 \begin{quote}
-I have the tokens from 3 libraries: NLTK, spaCy and BERT.
+``I have the tokens from 3 libraries: NLTK, spaCy and BERT.
 
 Generate Python code for the following assignment:
 Σύμφωνα με τον Νόμο του Zipf, το γινόμενο της πιθανότητας ενός type επί την θέση του στη λίστα των types (ταξινομημένη κατά φθίνουσα σειρά συχνότητας) είναι ίσο με μια σταθερά Α. Βρείτε ποια τιμή της σταθεράς A (εξετάστε τις επιλογές: 0.1, 0.2, 0.3, …, 1.0) ταιριάζει καλύτερα με το συγκεκριμένο σύνολο κείμενων. Δημιουργήστε ένα διάγραμμα όπου ο άξονας x είναι η θέση ενός type σε φθίνουσα σειρά συχνότητας και ο άξονας y είναι η συχνότητα του type στην συλλογή. Και οι 2 άξονες να ακολουθούν την λογαριθμική κλίμακα. Δείξτε στο ίδιο διάγραμμα με διαφορετικά χρώματα (i) τις προβλέψεις του νόμου του Zipf (με την καλύτερη τιμή που βρέθηκε για τη σταθερά Α) και (ii) τις πραγματικές μετρήσεις που έγιναν στα κείμενα.
 
-Make sure you generate 2 separate functions: one to find the best A value and another to plot the diagrams. Make sure each function accepts and returns the necessary variables.
+Make sure you generate 2 separate functions: one to find the best A value and another to plot the diagrams. Make sure each function accepts and returns the necessary variables.``
 
 \end{quote}
 

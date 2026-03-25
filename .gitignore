@@ -1,1 +1,5 @@
 .ipynb_checkpoints
+report_src/.ipynb_checkpoints
+*.aux
+*.log
+
