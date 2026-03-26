@@ -247,7 +247,7 @@ On the other hand, Bert uses a more modern subword tokenization approach - WordP
 TTR expresses vocabulary diversity. The higher values observed in NLTK and spaCy indicate a richer vocabulary. However, BERT has a vocabulary consisting of longer words which might have an increased meaning compared to the ones from the aforementioned methods.
 
 Both spaCy and NLTK follow Zipf's law:
-$5615/11017=50\%$ and $5072/10445=48\%$ so half of the vocabulary appears only once in the tokens. However, BERT does not follow this law $2915/8544=34\%$.
+$5615/11017=50\%$ and $5072/10445=48\%$ so half of the vocabulary appears only once in the tokens. BERT shows a lower percentage of Hapax Legomena (34\%), likely because its subword units are designed to be highly reusable across different words, reducing the number of unique, single-use types compared to word-based tokenizers.
 
 \subsection*{2}
 
@@ -353,17 +353,23 @@ Trigrams (k = 0.01                            & 429.445                         
 \end{tabular}
 \end{table}
 
-In each row, $k=0.01$ results in a significantly better (lower) perplexity. $k=1$ proves to be a much more aggressive smoothing method which overshadows the rest of the probabilities.
+\textbf{Smoothing Parameter (k)}
+In each row, $k=0.01$ results in a significantly better (lower) perplexity. The $k=1$ (Laplace) smoothing is too aggressive for this dataset. it reassigns too much probability mass from observed n-grams to unobserved ones, which increases the model's uncertainty (perplexity).
 
-The lowercase column appears to perform worse than the original one. I imagine this is happening because ``<UNK`` gets a higher frequency in the later making it much easier to appear in the vocabulary than in the former. This is happening because more words cross the cutover threshold (3) because they're lowercased. In this case, the vocabulary is larger and also more complex which forces the model to have to guess the next word instead of assigning ``<UNK>``, thus increasing perplexity.
+\textbf{Bigrams vs. Trigrams}
+Bigrams consistently outperform trigrams in every case. This is expected because our corpus is too small to create a large enough vocabulary of trigram combinations that we encounter in the test dataset. Hence, the models rely on the smoothing fallback during evaluation.
 
-We can see that bigrams perform better than trigrams in every case. This is expected because our dataset is too small to create a large enough vocabulary of every possible trigram combination that we encounter in the test dataset.
+\textbf{Lowecase}
+Lowercasing increases perplexity. While it merges word variants (e.g., "The" and "the"), this causes more words to meet the frequency threshold of 3. This reduces the frequency of the ``<UNK>`` token and makes the vocabulary larger. This forces the complicates the model which has to predict specific words instead of assigning ``<UNK>``, thus increasing perplexity.
 
-The Abstract Digits column performs better (lower perplexity) than the Lowercase column due to digit abstraction and vocabulary shrinkage. All digits collapse into combination of ``\#`` which the model does not have to learn. This makes it easier for the model to predict digits in a sentence.
+\textbf{Abstract Digits}
+This method shows an increased performance compared to the previous method. Digit abstraction leads to vocabulary shrinkage thus making the model less complex. All digit combinations collapse into a combination of ``\#`` tokens which the model does not have to learn, which leads to reduced complexity.
 
 \subsection*{2}
 
+In general, all models produce mostly incoherent text due to the small vocabulary size. The Trigram models produced much more coherent sentences than the Bigrams.
 
+Sentences generated with k=0.01 were far more realistic. At k=1, the probability distribution is too flat and the model frequently chooses random, unrelated words, resulting in less meaningful sentences.
 
 % \subsection*{References}
 % \begin{itemize}
