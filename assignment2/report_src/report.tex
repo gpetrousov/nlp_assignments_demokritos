@@ -812,11 +812,11 @@ As expected, the pretrained word embeddings from \lstinline{word2vec} and \lstin
 \end{tabular}
 \end{table}
 
-We can see how RNNs struggle to classify sentences in the training dataset, thus their accuracy drops. Linear layers don't maintain any word context and their addition reduces the accuracy even further. This is expected considering that RNNs struggle tracking word context as sentences grow past 20 words per sentence.
+We can see how RNNs struggle to classify sentences in the training dataset, thus their accuracy drops. Linear layers don't maintain word context and their addition reduces the accuracy even further. This is expected considering that RNNs struggle wth word context tracking, especially as sentences grow past 20 words.
 
-On the other hand, LSTM networks are able to maintain high accuracies on these new, larger, sentences which is attributed to their memory mechanism which allows them to maintain word context in large sentences.
+On the other hand, LSTM networks are able to maintain high accuracies on these larger sentences attributed to their memory mechanism which allows them to maintain word context.
 
-Furthermore, we can see a slight increase in training times which is attributed to the doubling of the sentence size - more processing is required.
+Furthermore, we can see a slight increase in training times due to the doubling of the sentence size - more processing is required.
 
 %---%
 
@@ -865,7 +865,7 @@ class Model1Bi_RNN(nn.Module):
         return logits
 \end{lstlisting}
 
-I used the same results extraction function, defined above. Details of the implementations of the rest of the neural networks are provided in the notebook.
+I used the same results extraction function, defined above. Details of the implementations of the rest of the neural networks are provided in the notebook (\lstinline{part-C.ipynb}).
 
 \begin{table}[H]
 \begin{tabular}{|l|c|c|c|c|c|c|}
