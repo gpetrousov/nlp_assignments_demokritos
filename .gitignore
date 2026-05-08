@@ -2,4 +2,7 @@
 report_src/.ipynb_checkpoints
 *.aux
 *.log
+*.bbl
+*.blg
+*.out
 
