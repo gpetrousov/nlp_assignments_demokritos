@@ -383,6 +383,199 @@ The value $-100$ is used to ignore specific tokens, such as CLS, SEP, padding to
 
 %----------------------
 
+\subsection*{5}
+
+I pulled the model from the registry, again, and wrote the following snippet to freeze the base model weights.
+
+\begin{lstlisting}[language=Python]
+# Freeze base model weights, except classification head
+for param in model.bert.parameters():
+    param.requires_grad = False
+\end{lstlisting}
+
+
+I wrote the following function to count the frozen and unfrozen model parameters.
+
+\begin{lstlisting}[language=Python]
+    # Count trainable and non-trainable parameters
+    def count_model_params(model):
+        nof_trainable = 0
+        nof_frozen = 0
+        for param in model.parameters():
+            if param.requires_grad == True:
+                nof_trainable += sum(p.numel() for p in param)
+            elif param.requires_grad == False:
+                nof_frozen += sum(p.numel() for p in param)
+            else:
+                print("Something went wrong!")
+                break
+
+        print(f"Trainable params: {nof_trainable}")
+        print(f"Frozen params: {nof_frozen}")
+\end{lstlisting}
+
+Using it on the current model, returned:
+
+\begin{lstlisting}
+Trainable params: 6921
+Frozen params: 108891648
+\end{lstlisting}
+
+Following is a reusable function I built to train any model later.
+
+\begin{lstlisting}[language=Python]
+# Training function
+def train_model(model, train_loader, valid_loader):
+    """ Will train only the classification head """
+    EPOCHS = 3
+    BATCH_SIZE = 8
+    LR = 1e-5
+    optimizer = optim.AdamW(filter(
+        lambda p: p.requires_grad, model.parameters()), lr=LR)
+
+    # train the model - SKIP if model loaded
+    print('training the model')
+    for epoch in range(EPOCHS):
+        model.train()
+        print(f'epoch {epoch + 1}/{EPOCHS}')
+        for batch in tqdm(train_loader, desc=f"Training epoch {epoch + 1}"):
+            batch = {k: v.to(device) for k, v in batch.items()}
+            outputs = model(**batch)
+            loss = outputs.loss
+
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
+        # calculate performance on validation set
+        Y_actual, Y_preds, y_true_tags, y_pred_tags = EvaluateModel(model, valid_loader)
+        report_metrics(Y_actual, Y_preds, y_true_tags, y_pred_tags,
+                      split_name=f"Validation (epoch {epoch + 1})")
+
+    return Y_actual, Y_preds, y_true_tags, y_pred_tags
+\end{lstlisting}
+
+
+The following results were obtained from running on a \lstinline{T4 GPU} in Google Colab.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|p{6cm}|c|c|}
+\hline
+\textbf{Metric} & \textbf{Mean ($\mu$)} & \textbf{Std. Dev ($\sigma$)} \\ \hline
+Token-level micro-average accuracy & 0.880 & $\pm$ 0.003 \\ \hline
+Token-level macro-average accuracy & 0.342 & $\pm$ 0.008 \\ \hline
+Entity-level micro-average F1      & 0.381 & $\pm$ 0.012 \\ \hline
+Entity-level macro-average F1      & 0.310 & $\pm$ 0.010 \\ \hline
+Training time cost (total)         & 6.65 min. & $\pm$ 0.02 min. \\ \hline
+\end{tabular}
+\end{table}
+
+Compared to the results from task 1, we can see that keeping the base model weights frozen, results in poorer classification performance for the specific dataset.
+
+%----------------------
+
+\subsection*{6}
+
+I split the original code and created re-usable functions. Following are the additional snippets I created to adjust the process for \lstinline{pos_tags} classification.
+
+The following code snippet is the modification I made to switch the labels to \lstinline{POS} tagging.
+
+\begin{lstlisting}
+# build tag set and label mappings
+all_tags = sorted({tag for s in train_sentences for tag in s["pos_tags"]}) # <--> ner_tags
+label2id = {tag: i for i, tag in enumerate(all_tags)}
+id2label = {i: tag for tag, i in label2id.items()}
+num_labels = len(all_tags)
+print('Tagset size:', num_labels)
+print('Tags:', all_tags)
+print(f"Tag IDs: {id2label}")
+print(f"Label2ID: {label2id}")
+\end{lstlisting}
+
+Next, I updated \lstinline{encode()} to capture \lstinline{pos_tags} in the sentences. Here, I only show the line I changed instead of the whole function. Full implementation is provided in the accompanied notebook, see task 6.
+
+\begin{lstlisting}[language=Python]
+    labels = align_label(encodings, sentence['pos_tags'], sentence) # ner_tags -> pos_tags
+\end{lstlisting}
+
+To train simulate the model, I reused the functions created earlier using now the newly instantiated model.
+
+\begin{lstlisting}[language=Python]
+    Y_actual, Y_preds, y_true_tags, y_pred_tags = train_model(model, train_loader, valid_loader)
+    full_eval(Y_actual, Y_preds, y_true_tags, y_pred_tags)
+\end{lstlisting}
+
+Following is the table with the evaluation results. For these runs, I used the \lstinline{A100} GPU to reduce training times.
+
+% Token-level Micro Accuracy: Mean = 0.950, Std Dev = 0.001
+% Token-level Macro Accuracy: Mean = 0.812, Std Dev = 0.001
+% Entity-level Micro F1: Mean = 0.926, Std Dev = 0.001
+% Entity-level Macro F1: Mean = 0.807, Std Dev = 0.001
+% Training Time Minutes: Mean = 45.034, Std Dev = 1.053
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|p{6cm}|c|c|}
+\hline
+\textbf{Metric} & \textbf{Mean ($\mu$)} & \textbf{Std. Dev ($\sigma$)} \\ \hline
+Token-level micro-average accuracy & 0.950 & $\pm$ 0.001 \\ \hline
+Token-level macro-average accuracy & 0.812 & $\pm$ 0.001 \\ \hline
+Entity-level micro-average F1      & 0.926 & $\pm$ 0.001 \\ \hline
+Entity-level macro-average F1      & 0.807 & $\pm$ 0.001 \\ \hline
+Training time cost (total)         & 4.38 min. & $\pm$ 0.0 min. \\ \hline
+\end{tabular}
+\end{table}
+
+Here, I present the first sentence from the test set that was missclassified that is at least 13 tokens long.
+
+\begin{lstlisting}
+    Sentence : But China saw their luck desert them in the second match of the group , crashing to a surprise 2-0 defeat to newcomers Uzbekistan .
+    True Tags : ['IN', 'VBG', 'NNP', 'RP', 'IN', 'CD', 'IN', 'DT', 'NN', 'NN', 'IN', 'NNP', 'NNP', ',', 'NNP', 'VBD', 'PRP$', 'JJ', 'NN', 'IN', 'CD', 'VBZ', 'IN', 'VBG', 'VBD', 'RP', 'IN', 'CD', 'IN', 'NNP', 'VBP', 'NNP', 'NNP', 'VBG', 'CD', 'IN', 'CD', '.']
+    Predicted Tags (aligned): ['IN', 'NN', 'NNP', 'IN', 'IN', 'CD', 'IN', 'DT', 'NN', 'NN', 'IN', 'NNP', 'NNP', ',', 'NNP', 'VBD', 'PRP$', 'JJ', 'NN', 'IN', 'CD', 'NNS', 'IN', 'VBG', 'VBN', 'RP', 'IN', 'CD', 'IN', 'NNP', 'NN', 'NNP', 'NNP', 'VBG', 'CD', 'IN', 'CD', '.']
+    {'correctly_classified_words': [('But', 'IN', 'IN'),
+    ('saw', 'NNP', 'NNP'),
+    ('luck', 'IN', 'IN'),
+    ('desert', 'CD', 'CD'),
+    ('them', 'IN', 'IN'),
+    ('in', 'DT', 'DT'),
+    ('the', 'NN', 'NN'),
+    ('second', 'NN', 'NN'),
+    ('match', 'IN', 'IN'),
+    ('of', 'NNP', 'NNP'),
+    ('the', 'NNP', 'NNP'),
+    ('group', ',', ','),
+    (',', 'NNP', 'NNP'),
+    ('crashing', 'VBD', 'VBD'),
+    ('to', 'PRP$', 'PRP$'),
+    ('a', 'JJ', 'JJ'),
+    ('surprise', 'NN', 'NN'),
+    ('2-0', 'IN', 'IN'),
+    ('defeat', 'CD', 'CD'),
+    ('newcomers', 'IN', 'IN'),
+    ('Uzbekistan', 'VBG', 'VBG')],
+
+    'incorrectly_classified_words': [('China', 'VBG', 'NN'),
+    ('their', 'RP', 'IN'),
+    ('to', 'VBZ', 'NNS'),
+    ('.', 'VBD', 'VBN')]}
+\end{lstlisting}
+
+Lastly, I ran the model on the custom test sentence.
+
+\begin{lstlisting}
+Original Sentence:
+Tim Cook to become
+Apple Executive Chairman
+John Ternus
+to become Apple CEO
+
+Predicted Tags: ['NNP', 'NNP', 'TO', 'VB', 'NNP', 'JJ', 'NN', 'NNP', 'NNP', 'TO', 'VB', 'NNP', 'NN']
+\end{lstlisting}
+
+In this case, the word "Executive" was missclassified as adjective (JJ), whereas in the sentence it's part of the job title and it's a noun (NNP). The model classified individual tokens and didn't span.
+
+%----------------------
 
 \clearpage % Start Bibliography on a new page
 \nocite{*}
