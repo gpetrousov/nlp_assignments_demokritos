@@ -140,6 +140,8 @@
 }
 
 \usepackage{url}
+%% Optional: Allow breaks at numbers and special characters
+\def\UrlBreaks{\do\/\do-\do\.\do\a\do\b\do\c\do\d\do\e\do\f\do\g\do\h\do\i\do\j\do\k\do\l\do\m\do\n\do\o\do\p\do\q\do\r\do\s\do\t\do\u\do\v\do\w\do\x\do\y\do\z\do\A\do\B\do\C\do\D\do\E\do\F\do\G\do\H\do\I\do\J\do\K\do\L\do\M\do\N\do\O\do\P\do\Q\do\R\do\S\do\T\do\U\do\V\do\W\do\X\do\Y\do\Z}
 
 % use fancy header and footer
 \usepackage{fancyhdr}
@@ -332,6 +334,29 @@ The output from the snippet shows the sentence, the expected token classificatio
   ('World', 'I-MISC', 'B-MISC')]}
 
 \end{lstlisting}
+
+Custom news sentence\footnote{\url{https://www.apple.com/newsroom/2026/04/tim-cook-to-become-apple-executive-chairman-john-ternus-to-become-apple-ceo/}}
+
+\begin{lstlisting}[language=Python]
+Original Sentence: Tim Cook to become Apple Executive Chairman John Ternus to become Apple CEO
+
+Predicted classifications for custom sentence:
+  Word: 'Tim' -> Predicted Tag: 'B-PER'
+  Word: 'Cook' -> Predicted Tag: 'I-PER'
+  Word: 'to' -> Predicted Tag: 'O'
+  Word: 'become' -> Predicted Tag: 'O'
+  Word: 'Apple' -> Predicted Tag: 'B-ORG'
+  Word: 'Executive' -> Predicted Tag: 'O'
+  Word: 'Chairman' -> Predicted Tag: 'O'
+  Word: 'John' -> Predicted Tag: 'B-PER'
+  Word: 'Ternus' -> Predicted Tag: 'I-PER'
+  Word: 'to' -> Predicted Tag: 'O'
+  Word: 'become' -> Predicted Tag: 'O'
+  Word: 'Apple' -> Predicted Tag: 'B-ORG'
+  Word: 'CEO' -> Predicted Tag: 'O'
+\end{lstlisting}
+
+I did not manage to spot missclassified entities.
 
 
 %----------------------
