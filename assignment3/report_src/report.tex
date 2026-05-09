@@ -363,7 +363,11 @@ I did not manage to spot missclassified entities.
 
 \subsection*{4}
 
-The function moves through the sentence word-by-word and assigns each token a numeric ID. This ID maps to a specific label stored in the \lstinline{label_id} variable. The table below shows the relationship between each token ID, its corresponding label ID, and its specific function\footnote{\url{https://huggingface.co/learn/llm-course/chapter7/2}}:
+\lstinline{align_label()} iterates through the sentence and assigns numeric IDs \lstinline{word_ids} to each token. Then, it iterates through those IDs to determine if some words span across multiple tokens. If they do, it only assigns a label (tag) for the first part: \lstinline{label_ids.append(label2id.get(labels[word_idx], -100))}. For subsequent, or special tokens (\lstinline{SEP, CLS,...}), it assigns a score of -100 which prevents the error function from updating the weights of the model.
+
+% The function iterates through the sentence word-by-word and assigns each token a numeric ID. This ID maps to a specific label stored in the \lstinline{label_id} variable. The table below shows the relationship between each token ID, its corresponding label ID, and its specific function\footnote{\url{https://huggingface.co/learn/llm-course/chapter7/2}}:
+
+Following is a table which shows the label IDs each token gets assigned to based on their role in the sentence. This table is specific for the Named Entity Recognition (NER) task.
 
 \begin{table}[h]
 \centering
@@ -379,7 +383,7 @@ The function moves through the sentence word-by-word and assigns each token a nu
 \end{tabular}
 \end{table}
 
-The value $-100$ is used to ignore specific tokens, such as CLS, SEP, padding tokens, etc., in the loss calculation in order to prevent weight calculations.
+% The value $-100$ is used to ignore specific tokens, such as CLS, SEP, padding tokens, etc., in the loss calculation in order to prevent weight calculations.
 
 %----------------------
 
@@ -481,7 +485,7 @@ I split the original code and created re-usable functions. Following are the add
 
 The following code snippet is the modification I made to switch the labels to \lstinline{POS} tagging.
 
-\begin{lstlisting}
+\begin{lstlisting}[language=Python]
 # build tag set and label mappings
 all_tags = sorted({tag for s in train_sentences for tag in s["pos_tags"]}) # <--> ner_tags
 label2id = {tag: i for i, tag in enumerate(all_tags)}
@@ -573,7 +577,99 @@ to become Apple CEO
 Predicted Tags: ['NNP', 'NNP', 'TO', 'VB', 'NNP', 'JJ', 'NN', 'NNP', 'NNP', 'TO', 'VB', 'NNP', 'NN']
 \end{lstlisting}
 
-In this case, the word "Executive" was missclassified as adjective (JJ), whereas in the sentence it's part of the job title and it's a noun (NNP). The model classified individual tokens and didn't span.
+The word "Executive" was missclassified as an adjective (JJ), whereas in the sentence it's part of the job title (Executive Chairman) and it's a noun (NNP). In this case, the model classified the tokens individually, didn't span and ended up missclassifying them.
+
+%----------------------
+
+\subsection*{7}
+
+Just like in the previous task, I made small modifications to the labels we're interested in tracking - \lstinline{chunk} tagging. Here, I will present only the small parts I changed. Full implementations of all subtasks are available in my notebook.
+
+\begin{lstlisting}[language=Python]
+# build tag set and label mappings
+all_tags = sorted({tag for s in train_sentences for tag in s['chunk_tags']})
+...
+\end{lstlisting}
+
+Next, I updated \lstinline{encode()} to capture \lstinline{chunk_tags} in the sentences.
+
+\begin{lstlisting}[language=Python]
+    labels = align_label(encodings, sentence['chunk_tags'], sentence) # ner_tags -> chunk_tags
+\end{lstlisting}
+
+I trained and evaluated the model in one line using the previously developed utilities.
+
+\begin{lstlisting}[language=Python]
+    Y_actual, Y_preds, y_true_tags, y_pred_tags = train_model(model, train_loader, valid_loader)
+    full_eval(Y_actual, Y_preds, y_true_tags, y_pred_tags)
+\end{lstlisting}
+
+Following is the table with the evaluation results. For these runs, I used the \lstinline{A100} GPU to reduce training times.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|p{6cm}|c|c|}
+\hline
+\textbf{Metric} & \textbf{Mean ($\mu$)} & \textbf{Std. Dev ($\sigma$)} \\ \hline
+Token-level micro-average accuracy & 0.96 & $\pm$ 0.002 \\ \hline
+Token-level macro-average accuracy & 0.60 & $\pm$ 0.001 \\ \hline
+Entity-level micro-average F1      & 0.913 & $\pm$ 0.001 \\ \hline
+Entity-level macro-average F1      & 0.659 & $\pm$ 0.004 \\ \hline
+Training time cost (total)         & 4.38 min. & $\pm$ 0.01 min. \\ \hline
+\end{tabular}
+\end{table}
+
+Here, I present the first sentence from the test set that was missclassified that is at least 13 tokens long.
+
+\begin{lstlisting}[language=Python]
+Misclassified sentence (over 13 words long!) at index 3:
+
+Original words: Japan began the defence of their Asian Cup title with a lucky 2-1 win against Syria in a Group C championship match on Friday .
+True Tags (aligned): ['B-NP', 'I-NP', 'B-PP', 'B-NP', 'O', 'B-ADVP', 'O', 'B-VP', 'I-VP', 'B-ADJP', 'B-PP', 'B-NP', 'I-NP', 'I-NP', 'O', 'B-NP', 'I-NP', 'I-NP', 'O', 'B-VP', 'B-PRT', 'B-PP', 'B-NP', 'B-SBAR', 'B-NP', 'B-VP', 'B-PRT', 'B-PP', 'B-NP', 'I-NP', 'B-PP', 'B-NP', 'I-NP', 'I-NP', 'B-PP', 'B-NP', 'O']
+
+Predicted Tags (aligned): ['B-NP', 'I-NP', 'B-PP', 'B-NP', 'O', 'B-ADVP', 'O', 'B-VP', 'I-VP', 'B-ADJP', 'B-PP', 'B-NP', 'I-NP', 'B-NP', 'O', 'B-NP', 'I-NP', 'I-NP', 'O', 'B-VP', 'B-PRT', 'B-PP', 'B-NP', 'B-SBAR', 'B-NP', 'B-VP', 'B-PRT', 'B-PP', 'B-NP', 'I-NP', 'B-PP', 'B-NP', 'I-NP', 'I-NP', 'B-PP', 'B-NP', 'O']
+
+{'correctly_classified_words': [('Japan', 'B-NP', 'B-NP'),
+  ('began', 'I-NP', 'I-NP'),
+  ('the', 'B-PP', 'B-PP'),
+  ('defence', 'B-NP', 'B-NP'),
+  ('of', 'O', 'O'),
+  ('their', 'B-ADVP', 'B-ADVP'),
+  ('Asian', 'O', 'O'),
+  ('Cup', 'B-VP', 'B-VP'),
+  ('title', 'I-VP', 'I-VP'),
+  ('with', 'B-ADJP', 'B-ADJP'),
+  ('a', 'B-PP', 'B-PP'),
+  ('lucky', 'B-NP', 'B-NP'),
+  ('2-1', 'I-NP', 'I-NP'),
+  ('against', 'O', 'O'),
+  ('Syria', 'B-NP', 'B-NP'),
+  ('in', 'I-NP', 'I-NP'),
+  ('a', 'I-NP', 'I-NP'),
+  ('Group', 'O', 'O'),
+  ('C', 'B-VP', 'B-VP'),
+  ('championship', 'B-PRT', 'B-PRT'),
+  ('match', 'B-PP', 'B-PP'),
+  ('on', 'B-NP', 'B-NP'),
+  ('Friday', 'B-SBAR', 'B-SBAR'),
+  ('.', 'B-NP', 'B-NP')],
+ 'incorrectly_classified_words': [('win', 'I-NP', 'B-NP')]}
+\end{lstlisting}
+
+Finally, we evaluate the model on our custom news sentence.
+
+\begin{lstlisting}[language=Python]
+Original Sentence: Tim Cook to become Apple Executive Chairman John Ternus to become Apple CEO
+Predicted Tags: ['B-NP', 'I-NP', 'B-VP', 'I-VP', 'B-NP', 'I-NP', 'I-NP', 'I-NP', 'I-NP', 'B-VP', 'I-VP', 'B-NP', 'I-NP']
+Corrected Tags: ['B-NP', 'I-NP', 'B-VP', 'I-VP', 'B-NP', 'I-NP', 'I-NP', 'B-NP', 'I-NP', 'B-VP', 'I-VP', 'B-NP', 'I-NP']
+\end{lstlisting}
+
+From the chunk tagging, we can see the model missclassified the tokens "John Ternus" as separate chunks of words --- (I-NP, I-NP) --- while it should have been classified as beginning and inside words : (B-NP, I-NP)
+
+
+%----------------------
+
+\subsection*{8}
 
 %----------------------
 
