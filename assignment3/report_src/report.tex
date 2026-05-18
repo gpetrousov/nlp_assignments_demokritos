@@ -273,7 +273,7 @@ Training time (min./epoch)         & 4:38 & $\pm$ 0:05  \\ \hline
 
 \subsection*{2}
 
-Token-level metrics evaluate Named Entity Recognition (NER) by assessing each individual token, while entity-level metrtrics evaluate spans of tokens in a sentence. Token-level evaluation is simpler and lenient to mistakes, while entity-level evaluation is more strict and requires precise boundaries between entities.
+Token-level metrics evaluate Named Entity Recognition (NER) by assessing each individual token, while entity-level metrics evaluate spans of tokens in a sentence. Token-level evaluation is simpler and lenient to mistakes, while entity-level evaluation is more strict and requires precise boundaries between entities.
 
 In our situation, entity-level evaluation is preferred, since our task is to classify entities inside sentences. So, exact boundaries and strict identification might require tokens to span across many words (example "New York" instead of "New" and "York").
 
@@ -356,7 +356,7 @@ Predicted classifications for custom sentence:
   Word: 'CEO' -> Predicted Tag: 'O'
 \end{lstlisting}
 
-I did not manage to spot missclassified entities.
+I did not manage to spot misclassified entities.
 
 
 %----------------------
@@ -531,7 +531,7 @@ Training time cost (total)         & 4.38 min. & $\pm$ 0.0 min. \\ \hline
 \end{tabular}
 \end{table}
 
-Here, I present the first sentence from the test set that was missclassified that is at least 13 tokens long.
+Here, I present the first sentence from the test set that was misclassified that is at least 13 tokens long.
 
 \begin{lstlisting}
     Sentence : But China saw their luck desert them in the second match of the group , crashing to a surprise 2-0 defeat to newcomers Uzbekistan .
@@ -577,7 +577,7 @@ to become Apple CEO
 Predicted Tags: ['NNP', 'NNP', 'TO', 'VB', 'NNP', 'JJ', 'NN', 'NNP', 'NNP', 'TO', 'VB', 'NNP', 'NN']
 \end{lstlisting}
 
-The word "Executive" was missclassified as an adjective (JJ), whereas in the sentence it's part of the job title (Executive Chairman) and it's a noun (NNP). In this case, the model classified the tokens individually, didn't span and ended up missclassifying them.
+The word "Executive" was misclassified as an adjective (JJ), whereas in the sentence it's part of the job title (Executive Chairman) and it's a noun (NNP). In this case, the model classified the tokens individually, didn't span and ended up missclassifying them.
 
 %----------------------
 
@@ -619,7 +619,7 @@ Training time cost (total)         & 4.38 min. & $\pm$ 0.01 min. \\ \hline
 \end{tabular}
 \end{table}
 
-Here, I present the first sentence from the test set that was missclassified that is at least 13 tokens long.
+Here, I present the first sentence from the test set that was misclassified that is at least 13 tokens long.
 
 \begin{lstlisting}[language=Python]
 Misclassified sentence (over 13 words long!) at index 3:
@@ -664,7 +664,7 @@ Predicted Tags: ['B-NP', 'I-NP', 'B-VP', 'I-VP', 'B-NP', 'I-NP', 'I-NP', 'I-NP',
 Corrected Tags: ['B-NP', 'I-NP', 'B-VP', 'I-VP', 'B-NP', 'I-NP', 'I-NP', 'B-NP', 'I-NP', 'B-VP', 'I-VP', 'B-NP', 'I-NP']
 \end{lstlisting}
 
-From the chunk tagging, we can see the model missclassified the tokens "John Ternus" as separate chunks of words --- (I-NP, I-NP) --- while it should have been classified as beginning and inside words : (B-NP, I-NP)
+From the chunk tagging, we can see the model misclassified the tokens "John Ternus" as separate chunks of words --- (I-NP, I-NP) --- while it should have been classified as beginning and inside words : (B-NP, I-NP)
 
 
 %----------------------
@@ -781,6 +781,12 @@ Even though we used a much larger model (\lstinline{Llama-3.3-70B}), the scores 
 weighted avg      0.467     0.194     0.234       407
 \end{lstlisting}
 
+
+%----------------------
+
+\subsection*{Addendum}
+
+The most unexpected result was \lstinline{Llama-3.3-70B} scoring absolute zero on organizations.% due to a minor tag formatting mismatch in the JSON output.
 
 %----------------------
 
