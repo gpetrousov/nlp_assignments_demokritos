@@ -8,7 +8,7 @@ client = Groq(api_key=groq_key)
 
 # dataset = load_dataset("conll2003")
 dataset = load_dataset("lhoestq/conll2003")
-test_set = dataset[]
+test_set = dataset["test"]
 
 num_sentences = 200
 subset = test_set.select(range(num_sentences))
