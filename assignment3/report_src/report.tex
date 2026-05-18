@@ -264,7 +264,7 @@ Token-level micro-average accuracy & 0.981 & $\pm$ 0.002 \\ \hline
 Token-level macro-average accuracy & 0.882 & $\pm$ 0.005 \\ \hline
 Entity-level micro-average F1      & 0.904 & $\pm$ 0.003 \\ \hline
 Entity-level macro-average F1      & 0.886 & $\pm$ 0.004 \\ \hline
-Training time cost (total)         & 63.4 min. & $\pm$ 1.8 min. \\ \hline
+Training time (min./epoch)         & 4:38 & $\pm$ 0:05  \\ \hline
 \end{tabular}
 \end{table}
 
@@ -503,7 +503,7 @@ Next, I updated \lstinline{encode()} to capture \lstinline{pos_tags} in the sent
     labels = align_label(encodings, sentence['pos_tags'], sentence) # ner_tags -> pos_tags
 \end{lstlisting}
 
-To train simulate the model, I reused the functions created earlier using now the newly instantiated model.
+To train simulate the model, I reused the functions created earlier with the newly instantiated model.
 
 \begin{lstlisting}[language=Python]
     Y_actual, Y_preds, y_true_tags, y_pred_tags = train_model(model, train_loader, valid_loader)
@@ -670,6 +670,58 @@ From the chunk tagging, we can see the model missclassified the tokens "John Ter
 %----------------------
 
 \subsection*{8}
+
+Following are the small changes I made in order to repeat task 1 using the \lstinline{RoBERTa} model.
+
+\begin{lstlisting}[language=Python]
+# Import the model for token classification
+from transformers import RobertaForTokenClassification
+\end{lstlisting}
+
+Next, I loaded the model with the classification head as the final layer and set \lstinline{add_prefix_space=True}\cite{robertatokenizer} for the tokenizer. The last variable instructs the tokenizer to not treat spaces as part of tokens.
+
+\begin{lstlisting}[language=Python]
+# Load the model with classification head
+model = RobertaForTokenClassification.from_pretrained(
+    "roberta-base",
+    num_labels=num_labels,
+    id2label=id2label,
+    label2id=label2id
+)
+
+# Layer layer from model architecture:
+# (classifier): Linear(in_features=768, out_features=9, bias=True)
+
+# Load tokenizer
+tokenizer = RobertaTokenizer.from_pretrained(
+    "roberta-base",
+    add_prefix_space=True
+    )
+\end{lstlisting}
+
+For training and evaluation I used the same code from task 1.
+
+\lstinline{RoBERTa} has been trained on significantly more data than \lstinline{BERT} thus is an improved model. This fact is reflected on following evaluation metrics:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|p{6.5cm}|c|c|}
+\hline
+\textbf{Metric} & \textbf{Mean ($\mu$)} & \textbf{Std. Dev ($\sigma$)} \\ \hline
+Token-level micro-average accuracy & 0.981 & $\pm$ 0.001 \\ \hline
+Token-level macro-average accuracy & 0.890 & $\pm$ 0.003 \\ \hline
+Entity-level micro-average F1      & 0.911 & $\pm$ 0.004 \\ \hline
+Entity-level macro-average F1      & 0.894 & $\pm$ 0.005 \\ \hline
+Training time (min./epoch)         & 4:39  & $\pm$ 0:02  \\ \hline
+\end{tabular}
+\end{table}
+
+
+While \lstinline{BERT-base} achieved an entity-level micro $F_1$-score of 0.904 and a macro $F_1$-score of 0.886, \lstinline{RoBERTa} outperformed it, reaching 0.911 and 0.894, respectively. This performance stems from improvements in both precision and recall. Specifically, the latter is superior in capturing internal entity tokens (\texttt{I-LOC}, \texttt{I-MISC}, and \texttt{I-ORG}) at the token level, which translates to higher classification accuracy for the \texttt{LOC}, \texttt{MISC}, and \texttt{ORG} categories at the entity level.
+
+%----------------------
+
+
 
 %----------------------
 
