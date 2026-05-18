@@ -721,6 +721,45 @@ While \lstinline{BERT-base} achieved an entity-level micro $F_1$-score of 0.904 
 
 %----------------------
 
+\subsection*{9}
+
+I used the following prompt in which I inject the test sentence on each call to the model.
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=python]
+"""You are an expert system specialized in Named Entity Recognition (NER).
+Your task is to identify all named entities in the provided sentence.
+The entity categories are exactly:
+- PER (Person)
+- LOC (Location)
+- ORG (Organization)
+- MISC (Miscellaneous)
+
+Analyze the sentence and extract the entities. Return the results strictly as a valid JSON object where keys are the extracted entity texts and values are their corresponding labels (PER, LOC, ORG, or MISC). Do not include any introductory or concluding text.
+
+Sentence: "{sentence_text}"
+
+JSON Output:"""
+\end{lstlisting}
+\end{minipage}
+
+I used the \lstinline{seqeval} library to generate the metrics for the results returned from groq.
+
+\begin{lstlisting}
+=== Groq Llama-3.1-8B — Entity-level classification report (seqeval) ===
+              precision    recall  f1-score   support
+
+         LOC      0.095     0.265     0.140        49
+        MISC      0.028     0.114     0.045        35
+         ORG      0.071     0.015     0.025       130
+         PER      0.582     0.238     0.338       193
+
+   micro avg      0.168     0.160     0.164       407
+   macro avg      0.194     0.158     0.137       407
+weighted avg      0.313     0.160     0.189       407
+\end{lstlisting}
+
+The zero-shot performance of \lstinline{Llama-3.1-8B} (Micro F1: 16.4\%) is significantly lower than the supervised \lstinline{BERT/RoBERTa} baselines from tasks 1 and 8. Encoder-only models are architecturally superior for (strict) token-level sequence labeling tasks. Their bidirectional self-attention allows them to analyze full-sentence context simultaneously. On the other hand, autoregressive decoders process text left-to-right and are natively optimized for next-token prediction.
 
 
 %----------------------
