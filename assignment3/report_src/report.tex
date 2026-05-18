@@ -671,14 +671,14 @@ From the chunk tagging, we can see the model missclassified the tokens "John Ter
 
 \subsection*{8}
 
-Following are the small changes I made in order to repeat task 1 using the \lstinline{RoBERTa} model.
+Following are the small changes I made in order to repeat task 1 using the \lstinline{RoBERTa} model. First, I imported the library which contains the models for token classification.
 
 \begin{lstlisting}[language=Python]
 # Import the model for token classification
 from transformers import RobertaForTokenClassification
 \end{lstlisting}
 
-Next, I loaded the model with the classification head as the final layer and set \lstinline{add_prefix_space=True}\cite{robertatokenizer} for the tokenizer. The last variable instructs the tokenizer to not treat spaces as part of tokens.
+Next, I loaded the model with the classification head as the final layer and set \lstinline{add_prefix_space=True}\footnote{\url{https://huggingface.co/docs/transformers/en/model_doc/roberta\#transformers.RobertaTokenizer.example}} for the tokenizer. The last variable instructs the tokenizer to not treat spaces as part of tokens.
 
 \begin{lstlisting}[language=Python]
 # Load the model with classification head
