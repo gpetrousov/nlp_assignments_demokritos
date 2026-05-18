@@ -30,7 +30,9 @@ JSON Output:"""
 
 results = []
 
-print("Processing 200 sentences with Llama 3.1 8B via Groq...")
+model_ver = "llama-3.1-8b-instant"
+
+print(f"Processing 200 sentences with {model_ver}...")
 
 for index, example in enumerate(subset):
     # Reconstruct the sentence string from tokens
@@ -46,7 +48,7 @@ for index, example in enumerate(subset):
                     "content": prompt_content
                 }
             ],
-            model="llama-3.1-8b-instant",
+            model=f"{model_ver}",
             temperature=0.0, # set temp - important from lecture
             response_format={"type": "json_object"}
         )
