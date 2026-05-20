@@ -726,8 +726,9 @@ The zero-shot performance of \lstinline{Llama-3.1-8B} (Micro F1: 16.4\%) is sign
 
 Even though we used a much larger model (\lstinline{Llama-3.3-70B}), the scores barely improved and are still way lower than the encoder-only models from tasks 1 and 8. Also, the 70B model took 6:48 just to finish 200 sentences, while the fine-tuned encoder models ran the same data in only a few milliseconds. To conclude, big decoder models are way too slow and don't perform as well as smaller, dedicated encoders, on token-level tagging tasks.
 
+\begin{minipage}{\linewidth}
 \begin{lstlisting}
-=== Groq Llama-3.1-8B — Entity-level classification report (seqeval) ===
+=== Groq Llama-3.3-70B — Entity-level classification report (seqeval) ===
               precision    recall  f1-score   support
 
          LOC      0.092     0.265     0.137        49
@@ -739,13 +740,14 @@ Even though we used a much larger model (\lstinline{Llama-3.3-70B}), the scores 
    macro avg      0.303     0.240     0.203       407
 weighted avg      0.467     0.194     0.234       407
 \end{lstlisting}
+\end{minipage}
 
 
 %----------------------
 
 \subsection*{Addendum}
 
-The most unexpected result was \lstinline{Llama-3.3-70B} scoring absolute zero on organizations.% due to a minor tag formatting mismatch in the JSON output.
+The most unexpected result was \lstinline{Llama-3.3-70B} scoring absolute zero on organizations. Its noteworthy to point out that although decoder-only models failed in token accuracy and resulted in incorrect classifications, they demonstrated a strong understanding of the task with zero-shot prompting. This highlights the power of each model architecture.
 
 %----------------------
 
