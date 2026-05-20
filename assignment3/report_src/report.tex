@@ -455,11 +455,11 @@ Token-level micro-average accuracy & 0.880 & $\pm$ 0.003 \\ \hline
 Token-level macro-average accuracy & 0.342 & $\pm$ 0.008 \\ \hline
 Entity-level micro-average F1      & 0.381 & $\pm$ 0.012 \\ \hline
 Entity-level macro-average F1      & 0.310 & $\pm$ 0.010 \\ \hline
-Training time cost (total)         & 6.65 min. & $\pm$ 0.02 min. \\ \hline
+Training time cost (min./epoch)         & 6.65 min. & $\pm$ 0.02 min. \\ \hline
 \end{tabular}
 \end{table}
 
-Compared to the results from task 1, we can see that keeping the base model weights frozen, results in poorer classification performance for the specific dataset.
+It's clearly visible that keeping the base model weights frozen and updating only the classifications head results in poorer performance compared to the results from task 1.
 
 %----------------------
 
