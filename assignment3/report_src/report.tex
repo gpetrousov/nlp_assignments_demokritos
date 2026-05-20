@@ -487,7 +487,7 @@ Next, I updated \lstinline{encode()} to capture \lstinline{pos_tags} in the sent
     labels = align_label(encodings, sentence['pos_tags'], sentence) # ner_tags -> pos_tags
 \end{lstlisting}
 
-To train simulate the model, I reused the functions created earlier with the newly instantiated model.
+To train and evaluate the model, I reused the functions created earlier with the newly instantiated model.
 
 \begin{lstlisting}[language=Python]
     Y_actual, Y_preds, y_true_tags, y_pred_tags = train_model(model, train_loader, valid_loader)
@@ -508,43 +508,42 @@ Following is the table with the evaluation results. For these runs, I used the \
 \hline
 \textbf{Metric} & \textbf{Mean ($\mu$)} & \textbf{Std. Dev ($\sigma$)} \\ \hline
 Token-level micro-average accuracy & 0.950 & $\pm$ 0.001 \\ \hline
-Token-level macro-average accuracy & 0.812 & $\pm$ 0.001 \\ \hline
-Training time cost (min./epoch)         & 4.38 min. & $\pm$ 0.0 min. \\ \hline
+Token-level macro-average accuracy & 0.812 & $\pm$ 0.007 \\ \hline
+Training time cost (min./epoch)         & 4:38 min. & $\pm$ 0.12 \\ \hline
 \end{tabular}
 \end{table}
 
-Here, I present the first sentence from the test set that was misclassified that is at least 13 tokens long.
+I implemented a Python function to find the first misclassified sentence with a length of at least 13, see \lstinnline{find_the_errors_in_pos_tags()}. Here, I present the first sentence from the test set.
 
 \begin{lstlisting}
-    Sentence : But China saw their luck desert them in the second match of the group , crashing to a surprise 2-0 defeat to newcomers Uzbekistan .
-    True Tags : ['IN', 'VBG', 'NNP', 'RP', 'IN', 'CD', 'IN', 'DT', 'NN', 'NN', 'IN', 'NNP', 'NNP', ',', 'NNP', 'VBD', 'PRP$', 'JJ', 'NN', 'IN', 'CD', 'VBZ', 'IN', 'VBG', 'VBD', 'RP', 'IN', 'CD', 'IN', 'NNP', 'VBP', 'NNP', 'NNP', 'VBG', 'CD', 'IN', 'CD', '.']
-    Predicted Tags (aligned): ['IN', 'NN', 'NNP', 'IN', 'IN', 'CD', 'IN', 'DT', 'NN', 'NN', 'IN', 'NNP', 'NNP', ',', 'NNP', 'VBD', 'PRP$', 'JJ', 'NN', 'IN', 'CD', 'NNS', 'IN', 'VBG', 'VBN', 'RP', 'IN', 'CD', 'IN', 'NNP', 'NN', 'NNP', 'NNP', 'VBG', 'CD', 'IN', 'CD', '.']
-    {'correctly_classified_words': [('But', 'IN', 'IN'),
-    ('saw', 'NNP', 'NNP'),
-    ('luck', 'IN', 'IN'),
-    ('desert', 'CD', 'CD'),
-    ('them', 'IN', 'IN'),
-    ('in', 'DT', 'DT'),
-    ('the', 'NN', 'NN'),
-    ('second', 'NN', 'NN'),
-    ('match', 'IN', 'IN'),
-    ('of', 'NNP', 'NNP'),
-    ('the', 'NNP', 'NNP'),
-    ('group', ',', ','),
-    (',', 'NNP', 'NNP'),
-    ('crashing', 'VBD', 'VBD'),
-    ('to', 'PRP$', 'PRP$'),
-    ('a', 'JJ', 'JJ'),
-    ('surprise', 'NN', 'NN'),
-    ('2-0', 'IN', 'IN'),
-    ('defeat', 'CD', 'CD'),
-    ('newcomers', 'IN', 'IN'),
-    ('Uzbekistan', 'VBG', 'VBG')],
+True Misclassified Sentence found at index 3:
+Original words: Japan began the defence of their Asian Cup title with a lucky 2-1 win against Syria in a Group C championship match on Friday .
 
-    'incorrectly_classified_words': [('China', 'VBG', 'NN'),
-    ('their', 'RP', 'IN'),
-    ('to', 'VBZ', 'NNS'),
-    ('.', 'VBD', 'VBN')]}
+{'correctly_classified_words': [('Japan', 'NNP', 'NNP'),
+  ('began', 'VBD', 'VBD'),
+  ('the', 'DT', 'DT'),
+  ('defence', 'NN', 'NN'),
+  ('of', 'IN', 'IN'),
+  ('their', 'PRP$', 'PRP$'),
+  ('Cup', 'NNP', 'NNP'),
+  ('title', 'NN', 'NN'),
+  ('with', 'IN', 'IN'),
+  ('a', 'DT', 'DT'),
+  ('lucky', 'JJ', 'JJ'),
+  ('2-1', 'CD', 'CD'),
+  ('win', 'VBP', 'VBP'),
+  ('against', 'IN', 'IN'),
+  ('Syria', 'NNP', 'NNP'),
+  ('in', 'IN', 'IN'),
+  ('a', 'DT', 'DT'),
+  ('C', 'NNP', 'NNP'),
+  ('championship', 'NN', 'NN'),
+  ('match', 'NN', 'NN'),
+  ('on', 'IN', 'IN'),
+  ('Friday', 'NNP', 'NNP'),
+  ('.', '.', '.')],
+ 'incorrectly_classified_words': [('Asian', 'JJ', 'NNP'),
+  ('Group', 'NNP', 'NN')]}
 \end{lstlisting}
 
 Lastly, I ran the model on the custom test sentence.
