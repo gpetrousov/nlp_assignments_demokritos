@@ -363,11 +363,9 @@ I did not manage to spot misclassified entities.
 
 \subsection*{4}
 
-\lstinline{align_label()} iterates through the sentence and assigns numeric IDs (\lstinline{word_ids}) to each token. Then, it iterates through those IDs to determine if a word was broken down into multiple subwords by the tokenizer. If it was, it only assigns a label (tag) for the first part (\lstinline{label_ids.append(label2id.get(labels[word_idx], -100))}) - ground truth. Ultimately, its role is to align human labeling (ground truth) with model tokenization so the inputs to the error function are aligned.
+\lstinline{align_label()} iterates through the sentence and assigns numeric IDs\footnote{\url{https://huggingface.co/learn/llm-course/chapter7/2}} (\lstinline{word_ids}) to each token. Then, it iterates through those IDs to determine if a word was broken down into multiple subwords by the tokenizer. If it was, it only assigns a label (tag) for the first part (\lstinline{label_ids.append(label2id.get(labels[word_idx], -100))}) --- ground truth. Ultimately, its role is to align human labeling (ground truth) with model tokenization so the inputs to the error function are aligned.
 
 Subsequent subwords and special tokens (\lstinline{[CLS]}, \lstinline{[SEP]}, etc.) are assigned a target value of -100. PyTorch's loss function (\lstinline{CrossEntropyLoss}) will ignore this value and prevent these extra tokens from changing the model's weights during training.
-
-The table with the specific labels for each token are available online\footnote{\url{https://huggingface.co/learn/llm-course/chapter7/2}}.
 
 % a table which shows the label IDs each token gets assigned to based on their role in the sentence. This table is specific for the Named Entity Recognition (NER) task.
 
