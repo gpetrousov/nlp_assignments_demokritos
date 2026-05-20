@@ -603,38 +603,16 @@ Training time cost (total)         & 4.38 min. & $\pm$ 0.01 min. \\ \hline
 Here, I present the first sentence from the test set that was misclassified that is at least 13 tokens long.
 
 \begin{lstlisting}[language=Python]
-Misclassified sentence (over 13 words long!) at index 3:
+Sentence index: 3
+Sentence: Japan began the defence of their Asian Cup title with a lucky 2-1 win against Syria in a Group C championship match on Friday .
 
-Original words: Japan began the defence of their Asian Cup title with a lucky 2-1 win against Syria in a Group C championship match on Friday .
-True Tags (aligned): ['B-NP', 'I-NP', 'B-PP', 'B-NP', 'O', 'B-ADVP', 'O', 'B-VP', 'I-VP', 'B-ADJP', 'B-PP', 'B-NP', 'I-NP', 'I-NP', 'O', 'B-NP', 'I-NP', 'I-NP', 'O', 'B-VP', 'B-PRT', 'B-PP', 'B-NP', 'B-SBAR', 'B-NP', 'B-VP', 'B-PRT', 'B-PP', 'B-NP', 'I-NP', 'B-PP', 'B-NP', 'I-NP', 'I-NP', 'B-PP', 'B-NP', 'O']
+True Tags: ['B-NP', 'I-NP', 'B-PP', 'B-NP', 'O', 'B-ADVP', 'O', 'B-VP', 'I-VP', 'B-ADJP', 'B-PP', 'B-NP', 'I-NP', 'I-NP', 'O', 'B-NP', 'I-NP', 'I-NP', 'O', 'B-VP', 'B-PRT', 'B-PP', 'B-NP', 'B-SBAR', 'B-NP', 'B-VP', 'B-PRT', 'B-PP', 'B-NP', 'I-NP', 'B-PP', 'B-NP', 'I-NP', 'I-NP', 'B-PP', 'B-NP', 'O']
 
-Predicted Tags (aligned): ['B-NP', 'I-NP', 'B-PP', 'B-NP', 'O', 'B-ADVP', 'O', 'B-VP', 'I-VP', 'B-ADJP', 'B-PP', 'B-NP', 'I-NP', 'B-NP', 'O', 'B-NP', 'I-NP', 'I-NP', 'O', 'B-VP', 'B-PRT', 'B-PP', 'B-NP', 'B-SBAR', 'B-NP', 'B-VP', 'B-PRT', 'B-PP', 'B-NP', 'I-NP', 'B-PP', 'B-NP', 'I-NP', 'I-NP', 'B-PP', 'B-NP', 'O']
+Predicted Tags: ['B-NP', 'I-NP', 'B-PP', 'B-NP', 'O', 'B-ADVP', 'O', 'B-VP', 'I-VP', 'B-ADJP', 'B-PP', 'B-NP', 'I-NP', 'I-NP', 'O', 'B-NP', 'I-NP', 'I-NP', 'B-NP', 'B-VP', 'B-PP', 'B-PP', 'B-NP', 'B-SBAR', 'B-NP', 'B-VP', 'B-PRT', 'B-PP', 'B-NP', 'I-NP', 'B-PP', 'B-NP', 'I-NP', 'I-NP', 'B-PP', 'B-NP', 'O']
 
-{'correctly_classified_words': [('Japan', 'B-NP', 'B-NP'),
-  ('began', 'I-NP', 'I-NP'),
-  ('the', 'B-PP', 'B-PP'),
-  ('defence', 'B-NP', 'B-NP'),
-  ('of', 'O', 'O'),
-  ('their', 'B-ADVP', 'B-ADVP'),
-  ('Asian', 'O', 'O'),
-  ('Cup', 'B-VP', 'B-VP'),
-  ('title', 'I-VP', 'I-VP'),
-  ('with', 'B-ADJP', 'B-ADJP'),
-  ('a', 'B-PP', 'B-PP'),
-  ('lucky', 'B-NP', 'B-NP'),
-  ('2-1', 'I-NP', 'I-NP'),
-  ('against', 'O', 'O'),
-  ('Syria', 'B-NP', 'B-NP'),
-  ('in', 'I-NP', 'I-NP'),
-  ('a', 'I-NP', 'I-NP'),
-  ('Group', 'O', 'O'),
-  ('C', 'B-VP', 'B-VP'),
-  ('championship', 'B-PRT', 'B-PRT'),
-  ('match', 'B-PP', 'B-PP'),
-  ('on', 'B-NP', 'B-NP'),
-  ('Friday', 'B-SBAR', 'B-SBAR'),
-  ('.', 'B-NP', 'B-NP')],
- 'incorrectly_classified_words': [('win', 'I-NP', 'B-NP')]}
+# Incorrect chuncks
+
+[('Group', 'O', 'B-NP'), ('championship', 'B-PRT', 'B-PP')]
 \end{lstlisting}
 
 Finally, we evaluate the model on our custom news sentence.
