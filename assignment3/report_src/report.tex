@@ -363,27 +363,13 @@ I did not manage to spot misclassified entities.
 
 \subsection*{4}
 
-\lstinline{align_label()} iterates through the sentence and assigns numeric IDs \lstinline{word_ids} to each token. Then, it iterates through those IDs to determine if some words span across multiple tokens. If they do, it only assigns a label (tag) for the first part: \lstinline{label_ids.append(label2id.get(labels[word_idx], -100))}. For subsequent, or special tokens (\lstinline{SEP, CLS,...}), it assigns a score of -100 which prevents the error function from updating the weights of the model.
+\lstinline{align_label()} iterates through the sentence and assigns numeric IDs (\lstinline{word_ids}) to each token. Then, it iterates through those IDs to determine if a word was broken down into multiple subwords by the tokenizer. If it was, it only assigns a label (tag) for the first part (\lstinline{label_ids.append(label2id.get(labels[word_idx], -100))}) - ground truth. Ultimately, its role is to align human labeling (ground truth) with model tokenization so the inputs to the error function are aligned.
 
-% The function iterates through the sentence word-by-word and assigns each token a numeric ID. This ID maps to a specific label stored in the \lstinline{label_id} variable. The table below shows the relationship between each token ID, its corresponding label ID, and its specific function\footnote{\url{https://huggingface.co/learn/llm-course/chapter7/2}}:
+Subsequent subwords and special tokens (\lstinline{[CLS]}, \lstinline{[SEP]}, etc.) are assigned a target value of -100. PyTorch's loss function (\lstinline{CrossEntropyLoss}) will ignore this value and prevent these extra tokens from changing the model's weights during training.
 
-Following is a table which shows the label IDs each token gets assigned to based on their role in the sentence. This table is specific for the Named Entity Recognition (NER) task.
+The table with the specific labels for each token are available online\footnote{\url{https://huggingface.co/learn/llm-course/chapter7/2}}.
 
-\begin{table}[h]
-\centering
-\renewcommand{\arraystretch}{1.2} % Adds a bit of breathing room between rows
-\begin{tabular}{|l|c|p{8cm}|} % Adjust 8cm to fit your page width
-\hline
-\multicolumn{1}{|c|}{\textbf{Label}} & \textbf{ID} & \textbf{Function} \\ \hline
-\textbf{O} & 8 & Indicates the word does not correspond to any entity. \\ \hline
-\textbf{B-PER/I-PER} & 3/7 & Indicates the word corresponds to the beginning of or is inside a person entity. \\ \hline
-\textbf{B-ORG/I-ORG} & 2/6 & Indicates the word corresponds to the beginning of or is inside an organization entity. \\ \hline
-\textbf{B-LOC/I-LOC} & 0/4 & Indicates the word corresponds to the beginning of or is inside a location entity. \\ \hline
-\textbf{B-MISC/I-MISC} & 1/5 & Indicates the word corresponds to the beginning of or is inside a miscellaneous entity. \\ \hline
-\end{tabular}
-\end{table}
-
-% The value $-100$ is used to ignore specific tokens, such as CLS, SEP, padding tokens, etc., in the loss calculation in order to prevent weight calculations.
+% a table which shows the label IDs each token gets assigned to based on their role in the sentence. This table is specific for the Named Entity Recognition (NER) task.
 
 %----------------------
 
