@@ -509,9 +509,7 @@ Following is the table with the evaluation results. For these runs, I used the \
 \textbf{Metric} & \textbf{Mean ($\mu$)} & \textbf{Std. Dev ($\sigma$)} \\ \hline
 Token-level micro-average accuracy & 0.950 & $\pm$ 0.001 \\ \hline
 Token-level macro-average accuracy & 0.812 & $\pm$ 0.001 \\ \hline
-Entity-level micro-average F1      & 0.926 & $\pm$ 0.001 \\ \hline
-Entity-level macro-average F1      & 0.807 & $\pm$ 0.001 \\ \hline
-Training time cost (total)         & 4.38 min. & $\pm$ 0.0 min. \\ \hline
+Training time cost (min./epoch)         & 4.38 min. & $\pm$ 0.0 min. \\ \hline
 \end{tabular}
 \end{table}
 
@@ -561,7 +559,7 @@ to become Apple CEO
 Predicted Tags: ['NNP', 'NNP', 'TO', 'VB', 'NNP', 'JJ', 'NN', 'NNP', 'NNP', 'TO', 'VB', 'NNP', 'NN']
 \end{lstlisting}
 
-The word "Executive" was misclassified as an adjective (JJ), whereas in the sentence it's part of the job title (Executive Chairman) and it's a noun (NNP). In this case, the model classified the tokens individually, didn't span and ended up missclassifying them.
+The word "Executive" was misclassified as an adjective (JJ), whereas in the sentence it's part of the job title (Executive Chairman) and it's a noun (NNP). In this case, the model classified the tokens individually, didn't span and ended up misclassifying them.
 
 %----------------------
 
